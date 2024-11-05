@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Welcome to Our Household Services</h1>
+    <p>We provide reliable and professional household services tailored to your needs. Our platform connects customers with service professionals who are ready to assist you.</p>
+    
+    <h2>What We Do</h2>
+    <ul>
+        <li>Home Cleaning</li>
+        <li>Plumbing Services</li>
+        <li>Electrical Repairs</li>
+        <li>Gardening and Lawn Care</li>
+        <li>Handyman Services</li>
+    </ul>
+
+    <h2>Get Started</h2>
+    <p>Select your role below to log in or register:</p>
+    <div class="d-flex justify-content-around">
+        <a href="{{ url_for('customer_login') }}" class="btn btn-primary">Customer Portal</a>
+        <a href="{{ url_for('professional_login') }}" class="btn btn-success">Service Professional Portal</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Admin Access</h2>
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+        <div class="form-group">
+            <label for="secret_key">Enter Secret Key:</label>
+            <input type="password" class="form-control" id="secret_key" name="secret_key" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Access Admin</button>
+    </form>
+</div>
+{% endblock %}
