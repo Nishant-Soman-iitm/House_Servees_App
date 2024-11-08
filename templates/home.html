@@ -2,23 +2,37 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Welcome to Our Household Services</h1>
-    <p>We provide reliable and professional household services tailored to your needs. Our platform connects customers with service professionals who are ready to assist you.</p>
+    <div class="text-center">
+        <h1 class="display-4">Welcome to House Servees</h1>
+        <p class="lead">We provide reliable and professional household services tailored to your needs. Our platform connects customers with service professionals who are ready to assist you.</p>
+    </div>
     
-    <h2>What We Do</h2>
-    <ul>
-        <li>Home Cleaning</li>
-        <li>Plumbing Services</li>
-        <li>Electrical Repairs</li>
-        <li>Gardening and Lawn Care</li>
-        <li>Handyman Services</li>
-    </ul>
+    <div class="mt-4">
+        <h2 class="text-center">What We Do</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Home Cleaning</li>
+                    <li class="list-group-item">Plumbing Services</li>
+                    <li class="list-group-item">Electrical Repairs</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Gardening and Lawn Care</li>
+                    <li class="list-group-item">Handyman Services</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <h2>Get Started</h2>
-    <p>Select your role below to log in or register:</p>
-    <div class="d-flex justify-content-around">
-        <a href="{{ url_for('customer_login') }}" class="btn btn-primary">Customer</a>
-        <a href="{{ url_for('professional_login') }}" class="btn btn-success">Service Professional</a>
+    <div class="mt-5 text-center">
+        <h2>Get Started</h2>
+        <p>Select your role below to log in or register:</p>
+        <div class="d-flex justify-content-center">
+            <a href="{{ url_for('customer_login') }}" class="btn btn-primary mx-2">Customer</a>
+            <a href="{{ url_for('professional_login') }}" class="btn btn-success mx-2">Service Professional</a>
+        </div>
     </div>
 </div>
 {% endblock %}
