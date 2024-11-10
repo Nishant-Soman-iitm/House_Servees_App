@@ -31,11 +31,18 @@ Base.metadata.create_all(engine)  # Creates the tables if they don't exist
 
 # Query the database
 if __name__ == '__main__':
-    stmt = select(Customer_Details)
+    stmt = select(Professional_details)
     print("----------Querying the database----------")
     
     with engine.connect() as connection:
         result = connection.execute(stmt)
+        print("Professional_Details : -")
+        for row in result:
+            print(row)
+    stmt2 = select(Customer_Details)
+    with engine.connect() as connection:
+        result = connection.execute(stmt2)
+        print("Customer_Details : -")
         for row in result:
             print(row)
 

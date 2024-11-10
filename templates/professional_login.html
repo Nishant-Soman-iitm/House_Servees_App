@@ -3,6 +3,14 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Service Professional Login</h2>
+    <!-- Display flashed messages if any -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <form method="POST">
         <div class="form-group">
             <label for="username">Username:</label>
