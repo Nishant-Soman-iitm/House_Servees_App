@@ -6,6 +6,8 @@ from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 app.secret_key = '0309'  # Set the secret key
 
+
+############################################################################################################################################################################
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -26,11 +28,14 @@ def admin_dashboard():
         return redirect(url_for('admin_page'))  # Redirect to admin page if no access
     return render_template('admin_dashboard.html')
 
+
+############################################################################################################################################################################
+
 @app.route('/customer/login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['user']
+        password = request.form['pass']
 
         with Session(engine) as sess:
             # Check if the username exists in the database
@@ -40,26 +45,29 @@ def customer_login():
                 # Set the session for the logged-in user
                 session['user_id'] = user.Email
                 print(1)
-                return redirect(url_for('customer_portal'))  # Redirect to customer portal page
+                return redirect(url_for('customer_portal', username=user.Email))  # Redirect to customer portal page
             else:
                 flash("Invalid username or password. Please try again.")  # Flash error message
                 print(2)
+
         print(3)
         return render_template('customer_login.html')  # Render login page again if login failed
-    print(4)
 
+    print(4)
     return render_template('customer_login.html')
+
+
 
 @app.route('/customer/register', methods=['GET', 'POST'])
 def customer_register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        print("Username:", username)
-        print("Password:", password)
+        username = request.form['user']
+        password = request.form['pass']
+        print("Username:", username)  # Debugging line
+        print("Password:", password)  # Debugging line
         
-        # Start a session to interact with the database
         try:
+            # Start a session to interact with the database
             with Session(engine) as sess:
                 # Check if the username already exists
                 existing_user = sess.query(Customer_Details).filter_by(Email=username).first()
@@ -68,33 +76,61 @@ def customer_register():
                     # If user exists, flash a message and reload registration page
                     flash("Username already exists. Please log in.")
                     return redirect(url_for('customer_register'))
-                
+
                 # If user does not exist, create and add new customer to the database
                 new_customer = Customer_Details(Email=username, password=password)
                 sess.add(new_customer)
-                sess.commit()  # Commit the transaction to save changes
-                flash("Registration successful! Please log in.")
                 
-            return redirect(url_for('customer_login'))  # Redirect to login after successful registration
-
-        except IntegrityError:
-            # Catch specific database errors
-            flash("Database integrity error. Username might already exist.")
-            return redirect(url_for('customer_register'))
+                try:
+                    # Commit the transaction to save the new customer
+                    sess.commit()
+                except IntegrityError:
+                    # Rollback in case of error and show message
+                    sess.rollback()
+                    flash("Error: Database integrity issue. Username might already exist.")
+                    return redirect(url_for('customer_register'))
+                
+            flash("Registration successful! Please log in.")  # Success message
+            return redirect(url_for('customer_login'))  # Redirect to login page after success
 
         except Exception as e:
-            # Catch any other errors, log, and flash message
+            # Catch any other errors, log, and show an error message
             print(f"Error occurred: {e}")
             flash("An error occurred while registering. Please try again.")
-            return redirect(url_for('customer_register'))
+            return redirect(url_for('customer_register'))  # Reload registration page
 
     return render_template('customer_register.html')
+
+
+@app.route('/customer/portal/<username>')
+def customer_portal(username):
+    # Logic to handle the customer portal page
+    # You can fetch more data about the customer using the username if needed
+    return render_template('customer_portal.html', username=username)
+
+############################################################################################################################################################################
+
 
 @app.route('/professional/login', methods=['GET', 'POST'])
 def professional_login():
     if request.method == 'POST':
-        # Handle professional login logic here
-        pass
+        username = request.form['username']
+        password = request.form['password']
+
+        with Session(engine) as sess:
+            # Check if the username exists in the database
+            professional = sess.query(Professional_details).filter_by(Email=username).first()
+
+            if professional and professional.password == password:  # If user exists and password matches
+                # Set the session for the logged-in professional
+                session['professional_id'] = professional.Email
+                profession = professional.profession
+                return redirect(url_for('professional_portal', username=professional.Email))  # Redirect to professional portal page
+            else:
+                flash("Invalid username or password. Please try again.")  # Flash error message
+
+        return render_template('professional_login.html')  # Render login page again if login failed
+
     return render_template('professional_login.html')
 
 @app.route('/professional/register', methods=['GET', 'POST'])
@@ -128,6 +164,28 @@ def professional_register():
     
     return render_template('professional_register.html')
 
+@app.route('/professional/portal/<username>')
+def professional_portal(username):
+    # Retrieve the logged-in professional's email (username) from the session
+    professional_email = session.get('professional_id')
+
+    if not professional_email:
+        flash("You must be logged in to access the professional portal.")
+        return redirect(url_for('professional_login'))
+
+    with Session(engine) as sess:
+        # Fetch the professional details from the database
+        professional = sess.query(Professional_details).filter_by(Email=professional_email).first()
+
+        if professional:
+            # Fetch the professional's profession and pass it to the template
+            profession = professional.profession
+            return render_template('professional_portal.html', username=professional.Email, profession=profession)
+        else:
+            flash("Professional not found.")
+            return redirect(url_for('professional_login'))
+
+############################################################################################################################################################################
 @app.route('/logout')
 def logout():
     session.pop('admin_access', None)  # Corrected to use Flask's session
