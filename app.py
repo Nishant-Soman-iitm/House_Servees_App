@@ -26,7 +26,14 @@ def admin_page():
 def admin_dashboard():
     if not session.get('admin_access'):
         return redirect(url_for('admin_page'))  # Redirect to admin page if no access
-    return render_template('admin_dashboard.html')
+
+    with Session(engine) as sess:
+        # Fetch all customer and professional details
+        all_customers = sess.query(Customer_Details).all()
+        all_professionals = sess.query(Professional_details).all()
+
+    # Pass data to the template
+    return render_template('admin_dashboard.html', customers=all_customers, professionals=all_professionals)
 
 
 ############################################################################################################################################################################
@@ -188,8 +195,12 @@ def professional_portal(username):
 ############################################################################################################################################################################
 @app.route('/logout')
 def logout():
-    session.pop('admin_access', None)  # Corrected to use Flask's session
+    # Clear all session variables for any logged-in user
+    session.pop('admin_access', None)
+    session.pop('user_id', None)
+    session.pop('professional_id', None)
     return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
