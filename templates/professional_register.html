@@ -11,14 +11,6 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <!-- Display flashed messages if any -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 
     <form action="" method="POST">
         <div class="form-group">
