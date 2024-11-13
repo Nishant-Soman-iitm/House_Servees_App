@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash,get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from db_init import Customer_Details, Professional_details, engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from flask_mail import Mail, Message
+import os
 
 app = Flask(__name__)
 app.secret_key = '0309'  # Set the secret key
@@ -16,8 +18,8 @@ def home():
 def admin_page():
     if request.method == 'POST':
         if request.form.get('secret_key') == app.secret_key:
-            session['admin_access'] = True  # Set session variable
-            return redirect(url_for('admin_dashboard'))  # Redirect to admin dashboard
+            session['admin_access'] = True  # Grant access to the admin dashboard
+            return redirect(url_for('admin_dashboard'))  # Redirect to the admin dashboard
         else:
             return render_template('admin_page.html', error='Invalid Secret Key')
     return render_template('admin_page.html')
@@ -51,27 +53,19 @@ def customer_login():
             if user and user.password == password:  # If user exists and password matches
                 # Set the session for the logged-in user
                 session['user_id'] = user.Email
-                print(1)
                 return redirect(url_for('customer_portal', username=user.Email))  # Redirect to customer portal page
             else:
                 flash("Invalid username or password. Please try again.")  # Flash error message
-                print(2)
 
-        print(3)
         return render_template('customer_login.html')  # Render login page again if login failed
 
-    print(4)
     return render_template('customer_login.html')
-
-
 
 @app.route('/customer/register', methods=['GET', 'POST'])
 def customer_register():
     if request.method == 'POST':
         username = request.form['user']
         password = request.form['pass']
-        print("Username:", username)  # Debugging line
-        print("Password:", password)  # Debugging line
         
         try:
             # Start a session to interact with the database
@@ -102,21 +96,18 @@ def customer_register():
 
         except Exception as e:
             # Catch any other errors, log, and show an error message
-            print(f"Error occurred: {e}")
             flash("An error occurred while registering. Please try again.")
             return redirect(url_for('customer_register'))  # Reload registration page
 
     return render_template('customer_register.html')
 
-
 @app.route('/customer/portal/<username>')
 def customer_portal(username):
     # Logic to handle the customer portal page
-    # You can fetch more data about the customer using the username if needed
     return render_template('customer_portal.html', username=username)
 
-############################################################################################################################################################################
 
+############################################################################################################################################################################
 
 @app.route('/professional/login', methods=['GET', 'POST'])
 def professional_login():
@@ -131,7 +122,6 @@ def professional_login():
             if professional and professional.password == password:  # If user exists and password matches
                 # Set the session for the logged-in professional
                 session['professional_id'] = professional.Email
-                profession = professional.profession
                 return redirect(url_for('professional_portal', username=professional.Email))  # Redirect to professional portal page
             else:
                 flash("Invalid username or password. Please try again.")  # Flash error message
@@ -193,6 +183,7 @@ def professional_portal(username):
             return redirect(url_for('professional_login'))
 
 ############################################################################################################################################################################
+
 @app.route('/logout')
 def logout():
     # Clear all session variables for any logged-in user
@@ -200,7 +191,6 @@ def logout():
     session.pop('user_id', None)
     session.pop('professional_id', None)
     return redirect(url_for('home'))
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
