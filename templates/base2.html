@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>{% block title %}House Servees{% endblock %}</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero-section {
+            background-image: url("{{ url_for('static', filename='images/hero-bg.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-text {
+            font-size: 3rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hero {
+            font-size: 1.25rem;
+            padding: 12px 30px;
+            margin-top: 20px;
+        }
+
+        .card-deck .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card-deck .card:hover {
+            transform: translateY(-10px);
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+        }
+
+        footer p {
+            margin: 0;
+            color: #6c757d;
+        }
+
+        .navbar {
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background-color: #343a40;
+        }
+
+        .navbar-brand img {
+            height: 120px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/your-logo.png') }}" alt="House Servees Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary btn-lg px-4" href="{{ url_for('customer_login') }}">Customer Portal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success btn-lg px-4 ml-3" href="{{ url_for('professional_login') }}">Service Professional Portal</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-text">
+            <h1>Welcome to House Servees</h1>
+            <p>Your trusted partner for all household services</p>
+            <a class="btn btn-light btn-hero" href="{{ url_for('customer_login') }}">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container my-5">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Dynamic Cards Section (Example) -->
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="card-deck">
+            <div class="card shadow-sm">
+                <img src="{{ url_for('static', filename='images/service1.jpg') }}" class="card-img-top" alt="Service 1">
+                <div class="card-body">
+                    <h5 class="card-title">Cleaning</h5>
+                    <p class="card-text">Our cleaning professionals ensure your home is spotless and tidy.</p>
+                    <a href="#" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <img src="{{ url_for('static', filename='images/service2.jpg') }}" class="card-img-top" alt="Service 2">
+                <div class="card-body">
+                    <h5 class="card-title">Plumbing</h5>
+                    <p class="card-text">Need plumbing assistance? Our experts are ready to help!</p>
+                    <a href="#" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <img src="{{ url_for('static', filename='images/service3.jpg') }}" class="card-img-top" alt="Service 3">
+                <div class="card-body">
+                    <h5 class="card-title">Electrical</h5>
+                    <p class="card-text">From repairs to installations, we've got your electrical needs covered.</p>
+                    <a href="#" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2024 House Servees. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Change navbar color on scroll
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+
+</html>

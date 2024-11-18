@@ -1,12 +1,40 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>Welcome to your professional portal, {{ username }}!</h2>
-        <p>Your profession: {{ profession }}</p>
-        <p>Your personalized professional portal content goes here.</p>
-        
-        <!-- Logout button -->
-        <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Log Out</a>
-    </div>
+  <h1>Welcome, {{ username }} - {{ profession }}</h1>
+
+  <h2>Pending Service Requests</h2>
+  
+  {% if service_requests %}
+    <table>
+      <thead>
+        <tr>
+          <th>Customer Email</th>
+          <th>Slot Date</th>
+          <th>Slot Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in service_requests %}
+          <tr>
+            <td>{{ request.customer_email }}</td>
+            <td>{{ request.slot_date }}</td>
+            <td>{{ request.slot_time }}</td>
+            <td>
+              <!-- Buttons for accepting or rejecting the request -->
+              <form action="{{ url_for('accept_request', request_id=request.id) }}" method="POST" style="display:inline;">
+                <button type="submit">Accept</button>
+              </form>
+              <form action="{{ url_for('reject_request', request_id=request.id) }}" method="POST" style="display:inline;">
+                <button type="submit">Reject</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No pending requests.</p>
+  {% endif %}
 {% endblock %}

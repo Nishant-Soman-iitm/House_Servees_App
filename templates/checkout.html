@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - House Servees{% endblock %}
+
+{% block content %}
+<h2>Checkout</h2>
+<p>Slot Date: {{ slot_date }}</p>
+<p>Slot Time: {{ slot_time }}</p>
+<p>Payment Amount: 40% of the Base Price</p>
+<form method="POST">
+    <button type="submit" class="btn btn-primary">Proceed to Pay</button>
+</form>
+
+{% endblock %}

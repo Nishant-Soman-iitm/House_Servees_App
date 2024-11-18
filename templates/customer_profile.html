@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Complete Your Profile</h2>
+    <p>Please fill in the details below to complete your profile and access your portal.</p>
+    
+    <form method="POST" action="{{ url_for('customer_profile', username=session['user_id']) }}">
+        <div class="form-group">
+            <label for="name">Full Name:</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" name="phone" id="phone" class="form-control" placeholder="Enter your phone number" required>
+        </div>
+        <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" name="city" id="city" class="form-control" placeholder="Enter your city" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Profile</button>
+    </form>
+    
+    <a href="{{ url_for('customer_login') }}" class="btn btn-secondary mt-3">Cancel</a>
+</div>
+{% endblock %}

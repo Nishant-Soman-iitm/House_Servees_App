@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="modal" id="slotsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Available Slots</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                {% for slot in slots %}
+                    <button class="btn btn-secondary mb-2" onclick="bookSlot('{{ slot.slot_time }}', '{{ slot.slot_date }}')">
+                        {{ slot.slot_date }} - {{ slot.slot_time }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function bookSlot(slotTime, slotDate) {
+    window.location.href = `/checkout?time=${slotTime}&date=${slotDate}`;
+}
+</script>
+{% endblock %}
