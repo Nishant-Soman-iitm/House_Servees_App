@@ -9,7 +9,7 @@ from admin import *
 from customer import *
 from professional import *
 
-
+@app.route('/')
 def home():
     return render_template('home.html')
 
@@ -40,6 +40,12 @@ def add_service():
             flash("Error: Could not add service. Please try again.")
     return redirect(url_for('admin_dashboard'))
 
+
+@app.route('/avail_services')
+def avail_services():
+    with Session(engine) as sess:
+        services = sess.query(service).all()
+    return render_template('avail_services.html', services=services)
 
 
 

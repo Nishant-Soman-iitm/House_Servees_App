@@ -8,6 +8,7 @@ from app import app
 from backend import *
 from professional import *
 from admin import *
+import re
 
 @app.route('/customer/login', methods=['GET', 'POST'])
 def customer_login():
@@ -31,39 +32,34 @@ def customer_login():
 
     return render_template('customer_login.html')
 
-@app.route('/customer/profile/<username>', methods=['GET', 'POST'])
-def customer_profile(username):
-    if not session.get('user_id'):
-        flash("Please log in to access this page.")
-        return redirect(url_for('customer_login'))
 
+@app.route('/customer_profile/<username>', methods=['GET', 'POST'])
+def customer_profile(username):
     if request.method == 'POST':
         name = request.form['name']
         phone = request.form['phone']
         city = request.form['city']
-        
-        with Session(engine) as sess:
-            # Fetch the logged-in customer's profile
-            customer = sess.query(Customer_Details).filter_by(Email=username).first()
+        aadhaar = request.form['aadhaar']
 
+        # Validate Aadhaar card format (12 digits)
+        if not re.match(r'^\d{12}$', aadhaar):
+            flash("Invalid Aadhaar card number. It should be a 12-digit number.")
+            return redirect(url_for('customer_profile', username=username))
+
+        with Session(engine) as sess:
+            customer = sess.query(Customer_Details).filter_by(Email=username).first()
             if customer:
-                # Update the customer details
                 customer.name = name
                 customer.phone = phone
                 customer.city = city
-
-                try:
-                    sess.commit()
-                    flash("Profile updated successfully!")
-                    return redirect(url_for('customer_portal', username=username))
-                except Exception as e:
-                    sess.rollback()
-                    flash("Error updating profile. Please try again.")
+                customer.aadhaar = aadhaar
+                sess.commit()
+                flash("Profile updated successfully.")
             else:
                 flash("Customer not found.")
-
-    return render_template('customer_profile.html', username=username)
-
+            return redirect(url_for('customer_profile', username=username))
+    
+    return render_template('customer_profile.html')
 
 
 @app.route('/customer/register', methods=['GET', 'POST'])

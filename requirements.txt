@@ -2,3 +2,6 @@ Flask
 Flask-Mail
 sqlalchemy
 bcrypt
+requests
+lxml
+pycryptodome

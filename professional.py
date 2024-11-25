@@ -9,24 +9,46 @@ from backend import *
 from admin import *
 from customer import *
 
+
+@app.route('/reg_prof')
+def reg_prof():
+    return render_template('professional_register.html')
+
 @app.route('/register_professional', methods=['GET', 'POST'])
 def register_professional():
     if request.method == 'POST':
         username = request.form['username']
         profession = request.form['profession']
         password = request.form['password']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
-        # Add logic to save the professional's details to the database
-        # Example: Validate and hash the password before saving
-        
-        flash("Registration successful!", "success")
-        return redirect(url_for('professional_login'))
-    
-    # Fetch services from the database
-    serve = service.query.all()  # Assumes Service is your model for the `service` table
-    
-    return render_template('register_professional.html', services=serve)
+        with Session(engine) as sess:
+            existing_user = sess.query(Professional_details).filter_by(Email=username).first()
+            if existing_user:
+                flash("Username already exists. Please log in.")
+                return redirect(url_for('professional_login'))
 
+            # Check if the profession exists in the services table
+            service_exists = sess.query(service).filter_by(name=profession).first()
+            if not service_exists:
+                flash("Service does not exist.")
+                return redirect(url_for('register_professional'))
+
+            new_professional = Professional_details(Email=username, password=hashed_password, profession=profession)
+            sess.add(new_professional)
+            try:
+                sess.commit()
+                flash("Registration successful! Please log in.")
+                return redirect(url_for('professional_login'))
+            except IntegrityError:
+                sess.rollback()
+                flash("Error occurred during registration. Please try again.")
+    
+    # Fetch services for radio buttons
+    with Session(engine) as sess:
+        services = sess.query(service).all()
+
+    return render_template('professional_register.html', services=services)
 
 @app.route('/professional/login', methods=['GET', 'POST'])
 def professional_login():

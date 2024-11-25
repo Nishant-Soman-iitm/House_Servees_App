@@ -19,6 +19,27 @@ def admin_page():
             return render_template('admin_page.html', error='Invalid Secret Key')
     return render_template('admin_page.html')
 
+
+@app.route('/delete_service/<int:service_id>', methods=['POST'])
+def delete_service(service_id):
+    if not session.get('admin_access'):
+        return redirect(url_for('admin_page'))  # Redirect to admin page if no access
+
+    with Session(engine) as sess:
+        service_to_delete = sess.query(service).filter_by(id=service_id).first()
+        if service_to_delete:
+            sess.delete(service_to_delete)
+            try:
+                sess.commit()
+                flash("Service deleted successfully.")
+            except IntegrityError:
+                sess.rollback()
+                flash("Error occurred while deleting the service. Please try again.")
+        else:
+            flash("Service not found.")
+    
+    return redirect(url_for('admin_dashboard'))
+
 '''@app.route('/customer/slots/<professional_email>', methods=['GET'])
 def fetch_slots(professional_email):
     with Session(engine) as sess:

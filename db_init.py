@@ -24,6 +24,7 @@ class Customer_Details(Base):
     name = Column(String)
     phone = Column(Integer, unique=True)
     city = Column(String)
+    aadhaar = Column(String, unique=True)  # Add Aadhaar card number column
 
     # Reverse relationship to access service requests for this customer
     service_requests = relationship('Service_Request', back_populates='customer', lazy='subquery')
@@ -39,7 +40,7 @@ class Professional_details(Base):
     city = Column(String)
     profession = Column(String)
     availability = Column(Boolean, default=True)  # Availability of the professional
-
+    aadhaar = Column(String, unique=True)  # Add Aadhaar card number column
     # Reverse relationship to access service requests for this professional
     service_requests = relationship('Service_Request', back_populates='professional')
     

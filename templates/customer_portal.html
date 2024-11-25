@@ -19,6 +19,9 @@
         {% endfor %}
     </div>
 
+    <!-- Profile button -->
+    <a href="{{ url_for('customer_profile', username=session['user_id']) }}" class="btn btn-info mt-3">Profile</a>
+
     <!-- Logout button -->
     <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Log Out</a>
 </div>
