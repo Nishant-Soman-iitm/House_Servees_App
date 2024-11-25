@@ -26,7 +26,7 @@ class Customer_Details(Base):
     city = Column(String)
 
     # Reverse relationship to access service requests for this customer
-    service_requests = relationship('Service_Request', back_populates='customer')
+    service_requests = relationship('Service_Request', back_populates='customer', lazy='subquery')
 
 
 class Professional_details(Base):
@@ -51,8 +51,6 @@ class service(Base):
     __tablename__ = 'service'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    phone = Column(Integer, unique=True)
-    city = Column(String)
 
 
 class Service_Request(Base):
@@ -66,6 +64,7 @@ class Service_Request(Base):
     created_at = Column(Integer, default=sqlalchemy.func.current_timestamp())  # Timestamp for request creation
     
     # Relationships
+    
     customer = relationship('Customer_Details', back_populates='service_requests')
     professional = relationship('Professional_details', back_populates='service_requests')
 
