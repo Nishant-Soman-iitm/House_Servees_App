@@ -8,6 +8,7 @@ from app import app
 from backend import *
 from admin import *
 from customer import *
+from datetime import datetime
 
 
 @app.route('/reg_prof')
@@ -187,3 +188,60 @@ def reject_request(request_id):
             sess.commit()
             flash("Request rejected.")
             return redirect(url_for('professional_portal', username=request.professional_email))
+        
+@app.route('/professional_profile/<username>', methods=['GET', 'POST'])
+def professional_profile(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+
+        if request.method == 'POST':
+            professional.name = request.form['name']
+            professional.phone = request.form['phone']
+            professional.city = request.form['city']
+            professional.profession = request.form['profession']
+            professional.availability = 'availability' in request.form
+            sess.commit()
+            flash("Profile updated successfully.")
+            return redirect(url_for('professional_portal', username=username))
+
+    return render_template('professional_profile.html', professional=professional)
+
+@app.route('/update_job_status/<int:job_id>', methods=['POST'])
+def update_job_status(job_id):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    new_status = request.form['status']
+
+    with Session(engine) as sess:
+        job = sess.query(Booking).filter_by(booking_id=job_id).first()
+        if job:
+            if new_status == 'Ongoing' and job.payment_status != '40% Paid':
+                flash("Customer needs to pay 40% of the base price before starting the job.")
+                return redirect(url_for('my_jobs'))
+            
+            job.status = new_status
+            if new_status == 'Ongoing':
+                job.start_time = datetime.now()
+            elif new_status == 'Completed':
+                job.end_time = datetime.now()
+                job.payment_status = 'Pending Payment'
+                flash("Job marked as completed. Awaiting customer review and payment.")
+            sess.commit()
+        else:
+            flash("Job not found.")
+
+    return redirect(url_for('my_jobs'))
+
+@app.route('/my_jobs')
+def my_jobs():
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        jobs = sess.query(Booking).filter_by(professional_email=session['professional_id']).all()
+
+    return render_template('my_jobs.html', jobs=jobs)

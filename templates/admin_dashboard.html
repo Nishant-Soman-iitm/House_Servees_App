@@ -12,6 +12,10 @@
             <label for="name">Service Name:</label>
             <input type="text" class="form-control" id="name" name="name" required>
         </div>
+        <div class="form-group">
+            <label for="base_price">Base Price:</label>
+            <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" required>
+        </div>
         <button type="submit" class="btn btn-primary">Add Service</button>
     </form>
 
@@ -74,6 +78,7 @@
             <tr>
                 <th>ID</th>
                 <th>Service Name</th>
+                <th>Base Price</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -82,6 +87,7 @@
             <tr>
                 <td>{{ serve.id }}</td>
                 <td>{{ serve.name }}</td>
+                <td>{{ serve.base_price }}</td>
                 <td>
                     <form action="{{ url_for('delete_service', service_id=serve.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

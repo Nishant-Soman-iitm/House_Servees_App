@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>My Bookings</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Professional Email</th>
+                <th>Slot Date</th>
+                <th>Slot Time</th>
+                <th>Status</th>
+                <th>Payment Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.professional_email }}</td>
+                <td>{{ booking.slot_date }}</td>
+                <td>{{ booking.slot_time }}</td>
+                <td>{{ booking.status }}</td>
+                <td>{{ booking.payment_status }}</td>
+                <td>
+                    {% if booking.status == 'Confirmed' and booking.payment_status == 'Pending' %}
+                        <form action="{{ url_for('make_payment', booking_id=booking.booking_id) }}" method="POST">
+                            <button type="submit" class="btn btn-primary btn-sm">Pay 40%</button>
+                        </form>
+                    {% elif booking.status == 'Completed' and booking.payment_status == 'Pending Payment' %}
+                        <a href="{{ url_for('submit_review', booking_id=booking.booking_id) }}" class="btn btn-primary btn-sm">Submit Review</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('customer_portal', username=session['user_id']) }}" class="btn btn-secondary mt-3">Back to Portal</a>
+</div>
+{% endblock %}

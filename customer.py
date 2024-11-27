@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from db_init import Customer_Details, Professional_details, Service_Request,service,Booking,Slots,engine
+from db_init import Customer_Details, Professional_details, Service_Request,service,Booking,Slots,JobReview
+from db_init import engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from flask_mail import Mail, Message
@@ -10,6 +11,15 @@ from professional import *
 from admin import *
 import re
 
+@app.route('/my_bookings')
+def my_bookings():
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        bookings = sess.query(Booking).filter_by(customer_email=session['user_id']).all()
+
+    return render_template('my_bookings.html', bookings=bookings)
 @app.route('/customer/login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
@@ -147,3 +157,40 @@ def book_slot():
 
     flash("Slot booked successfully! Wait for confirmation.")
     return redirect(url_for('customer_portal', username=session.get('user_id')))
+
+
+@app.route('/submit_review/<int:booking_id>', methods=['GET', 'POST'])
+def submit_review(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    if request.method == 'POST':
+        review_text = request.form['review_text']
+        rating = request.form['rating']
+
+        with Session(engine) as sess:
+            new_review = JobReview(booking_id=booking_id, review_text=review_text, rating=rating)
+            sess.add(new_review)
+            booking = sess.query(Booking).filter_by(booking_id=booking_id).first()
+            booking.payment_status = 'Completed'
+            sess.commit()
+            flash("Review submitted and payment completed.")
+            return redirect(url_for('customer_portal', username=session['user_id']))
+
+    return render_template('submit_review.html', booking_id=booking_id)
+
+@app.route('/make_payment/<int:booking_id>', methods=['POST'])
+def make_payment(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        booking = sess.query(Booking).filter_by(booking_id=booking_id).first()
+        if booking:
+            booking.payment_status = '40% Paid'
+            sess.commit()
+            flash("40% payment made successfully. The professional can now start the job.")
+        else:
+            flash("Booking not found.")
+
+    return redirect(url_for('my_bookings'))

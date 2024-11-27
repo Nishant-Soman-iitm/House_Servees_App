@@ -1,40 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Welcome, {{ username }} - {{ profession }}</h1>
+  <div class="container mt-5">
+    <h1>Welcome, {{ username }} - {{ profession }}</h1>
 
-  <h2>Pending Service Requests</h2>
-  
-  {% if service_requests %}
-    <table>
-      <thead>
-        <tr>
-          <th>Customer Email</th>
-          <th>Slot Date</th>
-          <th>Slot Time</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for request in service_requests %}
+    <h2>Pending Service Requests</h2>
+    
+    {% if service_requests %}
+      <table class="table table-striped table-bordered">
+        <thead>
           <tr>
-            <td>{{ request.customer_email }}</td>
-            <td>{{ request.slot_date }}</td>
-            <td>{{ request.slot_time }}</td>
-            <td>
-              <!-- Buttons for accepting or rejecting the request -->
-              <form action="{{ url_for('accept_request', request_id=request.id) }}" method="POST" style="display:inline;">
-                <button type="submit">Accept</button>
-              </form>
-              <form action="{{ url_for('reject_request', request_id=request.id) }}" method="POST" style="display:inline;">
-                <button type="submit">Reject</button>
-              </form>
-            </td>
+            <th>Customer Email</th>
+            <th>Slot Date</th>
+            <th>Slot Time</th>
+            <th>Actions</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No pending requests.</p>
-  {% endif %}
+        </thead>
+        <tbody>
+          {% for request in service_requests %}
+            <tr>
+              <td>{{ request.customer_email }}</td>
+              <td>{{ request.slot_date }}</td>
+              <td>{{ request.slot_time }}</td>
+              <td>
+                <!-- Buttons for accepting or rejecting the request -->
+                <form action="{{ url_for('accept_request', request_id=request.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                </form>
+                <form action="{{ url_for('reject_request', request_id=request.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No pending requests.</p>
+    {% endif %}
+
+    <!-- Profile button -->
+    <a href="{{ url_for('professional_profile', username=session['professional_id']) }}" class="btn btn-info mt-3">Profile</a>
+
+    <!-- My Jobs button -->
+    <a href="{{ url_for('my_jobs') }}" class="btn btn-info mt-3">My Jobs</a>
+
+    <!-- Logout button -->
+    <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Log Out</a>
+  </div>
 {% endblock %}

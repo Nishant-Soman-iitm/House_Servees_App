@@ -22,6 +22,9 @@
     <!-- Profile button -->
     <a href="{{ url_for('customer_profile', username=session['user_id']) }}" class="btn btn-info mt-3">Profile</a>
 
+    <!-- My Bookings button -->
+    <a href="{{ url_for('my_bookings') }}" class="btn btn-info mt-3">My Bookings</a>
+
     <!-- Logout button -->
     <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Log Out</a>
 </div>

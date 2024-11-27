@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>My Jobs</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Job ID</th>
+                <th>Customer Email</th>
+                <th>Slot Date</th>
+                <th>Slot Time</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.booking_id }}</td>
+                <td>{{ job.customer_email }}</td>
+                <td>{{ job.slot_date }}</td>
+                <td>{{ job.slot_time }}</td>
+                <td>{{ job.status }}</td>
+                <td>
+                    <form action="{{ url_for('update_job_status', job_id=job.booking_id) }}" method="POST">
+                        <select name="status" class="form-control" onchange="this.form.submit()">
+                            {% if job.status == 'Confirmed' %}
+                                <option value="Confirmed" selected>Confirmed</option>
+                                <option value="Ongoing">Ongoing</option>
+                            {% elif job.status == 'Ongoing' %}
+                                <option value="Ongoing" selected>Ongoing</option>
+                                <option value="Completed">Completed</option>
+                            {% elif job.status == 'Completed' %}
+                                <option value="Completed" selected>Completed</option>
+                            {% endif %}
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('professional_portal', username=session['professional_id']) }}" class="btn btn-secondary mt-3">Back to Portal</a>
+</div>
+{% endblock %}

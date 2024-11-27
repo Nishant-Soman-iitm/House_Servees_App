@@ -25,21 +25,6 @@ def checkout():
 
     return render_template('checkout.html', slot_time=slot_time, slot_date=slot_date)
 
-@app.route('/add_service', methods=['POST'])
-def add_service():
-    name = request.form['name']
-
-    with Session(engine) as sess:
-        new_service = service(name=name)
-        sess.add(new_service)
-        try:
-            sess.commit()
-            flash("Service added successfully!")
-        except IntegrityError:
-            sess.rollback()
-            flash("Error: Could not add service. Please try again.")
-    return redirect(url_for('admin_dashboard'))
-
 
 @app.route('/avail_services')
 def avail_services():
@@ -56,3 +41,21 @@ def logout():
     session.pop('user_id', None)
     session.pop('professional_id', None)
     return redirect(url_for('home'))
+
+@app.route('/update_booking_status/<int:booking_id>', methods=['POST'])
+def update_booking_status(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    new_status = request.form['status']
+
+    with Session(engine) as sess:
+        booking = sess.query(Booking).filter_by(booking_id=booking_id).first()
+        if booking:
+            booking.status = new_status
+            sess.commit()
+            flash("Booking status updated successfully.")
+        else:
+            flash("Booking not found.")
+
+    return redirect(url_for('my_bookings'))

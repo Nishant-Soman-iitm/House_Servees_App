@@ -9,6 +9,27 @@ from backend import *
 from customer import *
 from professional import *
 
+
+@app.route('/add_service', methods=['POST'])
+def add_service():
+    if not session.get('admin_access'):
+        return redirect(url_for('admin_page'))  # Redirect to admin page if no access
+
+    name = request.form['name']
+    base_price = request.form['base_price']
+
+    with Session(engine) as sess:
+        new_service = service(name=name, base_price=base_price)
+        sess.add(new_service)
+        try:
+            sess.commit()
+            flash("Service added successfully.")
+        except IntegrityError:
+            sess.rollback()
+            flash("Error occurred while adding the service. Please try again.")
+    
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_page():
     if request.method == 'POST':

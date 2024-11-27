@@ -1,6 +1,6 @@
-import sqlalchemy
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, select
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, select, Float, DateTime, func
 from sqlalchemy.orm import declarative_base, relationship
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -16,7 +16,6 @@ class Slots(Base):
     def book_slot(self):
         self.is_booked = True
 
-
 class Customer_Details(Base):
     __tablename__ = 'customer_details'
     Email = Column(String, primary_key=True, unique=True, nullable=False)
@@ -28,7 +27,6 @@ class Customer_Details(Base):
 
     # Reverse relationship to access service requests for this customer
     service_requests = relationship('Service_Request', back_populates='customer', lazy='subquery')
-
 
 class Professional_details(Base):
     __tablename__ = 'professional_details'
@@ -47,12 +45,11 @@ class Professional_details(Base):
     # Reverse relationship to access slots for this professional
     slots = relationship('Slots', back_populates='professional')
 
-
 class service(Base):
     __tablename__ = 'service'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-
+    base_price = Column(Float)  # Add base price column
 
 class Service_Request(Base):
     __tablename__ = 'service_request'
@@ -62,15 +59,19 @@ class Service_Request(Base):
     slot_date = Column(String, nullable=False)
     slot_time = Column(String, nullable=False)
     status = Column(String, default='Pending')  # Add status to track request state
-    created_at = Column(Integer, default=sqlalchemy.func.current_timestamp())  # Timestamp for request creation
+    created_at = Column(DateTime, default=func.current_timestamp())  # Timestamp for request creation
     
     # Relationships
-    
     customer = relationship('Customer_Details', back_populates='service_requests')
     professional = relationship('Professional_details', back_populates='service_requests')
 
-
-from sqlalchemy import ForeignKey
+class JobReview(Base):
+    __tablename__ = 'job_reviews'
+    review_id = Column(Integer, primary_key=True, autoincrement=True)
+    booking_id = Column(Integer, ForeignKey('booking.booking_id'), nullable=False)
+    review_text = Column(String, nullable=False)
+    rating = Column(Integer, nullable=False)
+    booking = relationship('Booking', back_populates='reviews')
 
 class Booking(Base):
     __tablename__ = 'booking'
@@ -80,10 +81,14 @@ class Booking(Base):
     professional_email = Column(String, ForeignKey('professional_details.Email'))
     customer_email = Column(String, ForeignKey('customer_details.Email'))
     status = Column(String, default='Pending')
+    payment_status = Column(String, default='Pending')  # Add payment status column
+    start_time = Column(DateTime)  # Add start time column
+    end_time = Column(DateTime)  # Add end time column
 
     # Relationships for professional and customer
     professional = relationship('Professional_details')
     customer = relationship('Customer_Details')
+    reviews = relationship('JobReview', back_populates='booking')
 
     # Method to retrieve the slot dynamically
     def get_slot(self, session):
@@ -93,26 +98,6 @@ class Booking(Base):
             slot_date=self.slot_date
         ).first()
 
-
-
-
 # Create the engine and update the database schema
 engine = create_engine('sqlite:///HouseServees.db')
 Base.metadata.create_all(engine)  # Creates the tables if they don't exist
-
-# Query the database
-if __name__ == '__main__':
-    stmt = select(Professional_details)
-    print("----------Querying the database----------")
-    
-    with engine.connect() as connection:
-        result = connection.execute(stmt)
-        print("Professional_Details : -")
-        for row in result:
-            print(row)
-    stmt2 = select(Customer_Details)
-    with engine.connect() as connection:
-        result = connection.execute(stmt2)
-        print("Customer_Details : -")
-        for row in result:
-            print(row)
