@@ -49,6 +49,12 @@ def delete_service(service_id):
     with Session(engine) as sess:
         service_to_delete = sess.query(service).filter_by(id=service_id).first()
         if service_to_delete:
+            professionals = sess.query(Professional_details).filter_by(profession=service_to_delete.name).all()
+            for professional in professionals:
+                # Notify professionals about the service deletion
+                flash(f"Service '{service_to_delete.name}' has been deleted. Please choose another service or remove your account.")
+                # You can also send an email notification here if needed
+
             sess.delete(service_to_delete)
             try:
                 sess.commit()
@@ -58,6 +64,8 @@ def delete_service(service_id):
                 flash("Error occurred while deleting the service. Please try again.")
         else:
             flash("Service not found.")
+    
+    return redirect(url_for('admin_dashboard'))
     
     return redirect(url_for('admin_dashboard'))
 
@@ -80,3 +88,37 @@ def admin_dashboard():
 
     # Pass data to the template
     return render_template('admin_dashboard.html', customers=all_customers, professionals=all_professionals, services=all_services)
+
+
+@app.route('/admin/authenticate_users', methods=['GET', 'POST'])
+def authenticate_users():
+    if not session.get('admin_access'):
+        return redirect(url_for('admin_page'))  # Redirect to admin page if no access
+
+    with Session(engine) as sess:
+        customers = sess.query(Customer_Details).all()
+        professionals = sess.query(Professional_details).all()
+
+    return render_template('authenticate_users.html', customers=customers, professionals=professionals)
+
+@app.route('/admin/update_user_status/<user_type>/<email>', methods=['POST'])
+def update_user_status(user_type, email):
+    if not session.get('admin_access'):
+        return redirect(url_for('admin_page'))  # Redirect to admin page if no access
+
+    new_status = request.form['status']
+
+    with Session(engine) as sess:
+        if user_type == 'customer':
+            user = sess.query(Customer_Details).filter_by(Email=email).first()
+        elif user_type == 'professional':
+            user = sess.query(Professional_details).filter_by(Email=email).first()
+
+        if user:
+            user.status = new_status
+            sess.commit()
+            flash(f"User status updated to {new_status}.")
+        else:
+            flash("User not found.")
+
+    return redirect(url_for('authenticate_users'))

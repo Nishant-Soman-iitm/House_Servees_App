@@ -3,36 +3,143 @@
 {% block content %}
 <div class="container mt-5">
     <div class="text-center">
-        <h1 class="display-4">Welcome to House Servees</h1>
-        <p class="lead">We provide reliable and professional household services tailored to your needs. Our platform connects customers with service professionals who are ready to assist you.</p>
+        <h1 id="One" class="display-4">Welcome to House Servees</h1>
+        <p id="One" class="lead">We provide reliable and professional household services tailored to your needs. Our platform connects customers with service professionals who are ready to assist you.</p>
     </div>
     
-    <div class="mt-4">
-        <h2 class="text-center">What We Do</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Home Cleaning</li>
-                    <li class="list-group-item">Plumbing Services</li>
-                    <li class="list-group-item">Electrical Repairs</li>
-                </ul>
+    <div class="mt-5">
+        <h2 id="One" class="text-center mb-4">What We Do</h2>
+        <div class="accordion" id="servicesAccordion">
+            <div class="card mb-3">
+                <div class="card-header" id="headingCleaning">
+                    <h3 class="mb-0">
+                        <button id="One" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseCleaning" aria-expanded="true" aria-controls="collapseCleaning">
+                            <i class="fas fa-broom"></i> Cleaning
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapseCleaning" class="collapse show" aria-labelledby="headingCleaning" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Cleaning">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Full House Cleaning</li>
+                            <li class="list-group-item">Kitchen Cleaning</li>
+                            <li class="list-group-item">Bathroom Deep Clean</li>
+                            <li class="list-group-item">Sofa Cleaning</li>
+                            <li class="list-group-item">Surface cleaning (particular walls)</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Gardening and Lawn Care</li>
-                    <li class="list-group-item">Handyman Services</li>
-                </ul>
+            <div class="card mb-3">
+                <div class="card-header" id="headingCarpentry">
+                    <h3 class="mb-0">
+                        <button id="One" class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseCarpentry" aria-expanded="false" aria-controls="collapseCarpentry">
+                            <i class="fas fa-hammer"></i> Custom Carpentry
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapseCarpentry" class="collapse" aria-labelledby="headingCarpentry" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Carpentry">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Book Shelf Build</li>
+                            <li class="list-group-item">Table-chair set build</li>
+                            <li class="list-group-item">Sofa Build</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header" id="headingInterior">
+                    <h3 class="mb-0">
+                        <button  id="One" class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseInterior" aria-expanded="false" aria-controls="collapseInterior">
+                            <i class="fas fa-paint-roller"></i> Interior
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapseInterior" class="collapse" aria-labelledby="headingInterior" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Interior">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Full Home Design</li>
+                            <li class="list-group-item">Home Renovation</li>
+                            <li class="list-group-item">Kitchen Design</li>
+                            <li class="list-group-item">Room Design</li>
+                            <li class="list-group-item">Corporate Designs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header" id="headingPlumbing">
+                    <h3 class="mb-0">
+                        <button id="One" class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapsePlumbing" aria-expanded="false" aria-controls="collapsePlumbing">
+                            <i class="fas fa-wrench"></i> Plumbing
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapsePlumbing" class="collapse" aria-labelledby="headingPlumbing" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Plumbing">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Full Piping Change</li>
+                            <li class="list-group-item">Minor Works</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header" id="headingPainting">
+                    <h3 class="mb-0">
+                        <button id="One" class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapsePainting" aria-expanded="false" aria-controls="collapsePainting">
+                            <i class="fas fa-paint-brush"></i> Painting
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapsePainting" class="collapse" aria-labelledby="headingPainting" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Painting">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Full House Paint</li>
+                            <li class="list-group-item">Full Bungalow Paint (upto 2 storeys)</li>
+                            <li class="list-group-item">One Room Paint</li>
+                            <li class="list-group-item">Full Building Paint</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header" id="headingElectrical">
+                    <h3 class="mb-0">
+                        <button id="One" class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseElectrical" aria-expanded="false" aria-controls="collapseElectrical">
+                            <i class="fas fa-bolt"></i> Electrical Repairs
+                        </button>
+                    </h3>
+                </div>
+                <div id="collapseElectrical" class="collapse" aria-labelledby="headingElectrical" data-parent="#servicesAccordion">
+                    <div class="card-body">
+                        <img src="https://via.placeholder.com/300" class="img-fluid mb-3" alt="Electrical Repairs">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Entire Wiring Change</li>
+                            <li class="list-group-item">New Switchboards Installation</li>
+                            <li class="list-group-item">New Lighting Installations</li>
+                            <li class="list-group-item">Light Installation in Auditorium</li>
+                            <li class="list-group-item">Optimal Light in Office Spaces</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="mt-5 text-center">
-        <h2>Get Started</h2>
-        <p>Select your role below to log in or register:</p>
+        <h2 id="One">Get Started</h2>
+        <p id="One">Select your role below to log in or register:</p>
         <div class="d-flex justify-content-center">
-            <a href="{{ url_for('customer_login') }}" class="btn btn-primary mx-2">Customer</a>
-            <a href="{{ url_for('professional_login') }}" class="btn btn-success mx-2">Service Professional</a>
+            <a id="One" href="{{ url_for('customer_login') }}" class="btn btn-primary mx-2">Customer</a>
+            <a id="One" href="{{ url_for('professional_login') }}" class="btn btn-success mx-2">Service Professional</a>
         </div>
     </div>
-</div>
+</div><br><br>
 {% endblock %}

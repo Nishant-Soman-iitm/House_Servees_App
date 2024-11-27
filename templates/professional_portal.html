@@ -40,7 +40,7 @@
     {% endif %}
 
     <!-- Profile button -->
-    <a href="{{ url_for('professional_profile', username=session['professional_id']) }}" class="btn btn-info mt-3">Profile</a>
+    <a href="{{ url_for('professional_profile_view', username=session['professional_id']) }}" class="btn btn-info mt-3">Profile</a>
 
     <!-- My Jobs button -->
     <a href="{{ url_for('my_jobs') }}" class="btn btn-info mt-3">My Jobs</a>

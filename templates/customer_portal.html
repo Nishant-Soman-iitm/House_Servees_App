@@ -12,7 +12,7 @@
                     <h5 class="card-title">{{ professional.name }}</h5>
                     <p class="card-text">Profession: {{ professional.profession }}</p>
                     <p class="card-text">City: {{ professional.city }}</p>
-                    <p class="card-text">Status: {{ professional.status }}</p>
+                    <p class="card-text">Average Rating: {{ professional.average_rating }}</p>
                     <button class="btn btn-primary" data-toggle="modal" data-target="#slotsModal" onclick="loadSlots('{{ professional.Email }}')">Book Slot</button>
                 </div>
             </div>
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Profile button -->
-    <a href="{{ url_for('customer_profile', username=session['user_id']) }}" class="btn btn-info mt-3">Profile</a>
+    <a href="{{ url_for('customer_profile_view', username=session['user_id']) }}" class="btn btn-info mt-3">Profile</a>
 
     <!-- My Bookings button -->
     <a href="{{ url_for('my_bookings') }}" class="btn btn-info mt-3">My Bookings</a>

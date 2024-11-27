@@ -20,21 +20,35 @@ def my_bookings():
         bookings = sess.query(Booking).filter_by(customer_email=session['user_id']).all()
 
     return render_template('my_bookings.html', bookings=bookings)
+
+
 @app.route('/customer/login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
-        username = request.form['user']
-        password = request.form['pass']
-        
+        username = request.form['username']
+        password = request.form['password']
+
         with Session(engine) as sess:
             # Check if the username exists in the database
-            user = sess.query(Customer_Details).filter_by(Email=username).first()
+            customer = sess.query(Customer_Details).filter_by(Email=username).first()
 
-            # Verify that the user exists and the password matches
-            if user and bcrypt.checkpw(password.encode('utf-8'), user.password):
-                # Set the session for the logged-in user
-                session['user_id'] = user.Email
-                return redirect(url_for('customer_portal', username=user.Email))  # Redirect to customer portal
+            if customer and bcrypt.checkpw(password.encode('utf-8'), customer.password):  # If user exists and password matches
+                if customer.status == 'Blocked':
+                    flash("Your account is blocked. Please contact support.")
+                    return render_template('customer_login.html')
+                elif customer.status == 'Pending':
+                    flash("Your account is pending approval. Please wait for admin approval.")
+                    return render_template('customer_login.html')
+
+                # Check if the profile is complete
+                if not customer.name or not customer.phone or not customer.city or not customer.aadhaar:
+                    session['user_id'] = customer.Email
+                    flash("Please complete your profile before accessing the portal.")
+                    return redirect(url_for('customer_profile', username=customer.Email))
+
+                # Set the session for the logged-in customer
+                session['user_id'] = customer.Email
+                return redirect(url_for('customer_portal', username=customer.Email))  # Redirect to customer portal page
             else:
                 flash("Invalid username or password. Please try again.")  # Flash error message
 
@@ -45,31 +59,22 @@ def customer_login():
 
 @app.route('/customer_profile/<username>', methods=['GET', 'POST'])
 def customer_profile(username):
-    if request.method == 'POST':
-        name = request.form['name']
-        phone = request.form['phone']
-        city = request.form['city']
-        aadhaar = request.form['aadhaar']
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
 
-        # Validate Aadhaar card format (12 digits)
-        if not re.match(r'^\d{12}$', aadhaar):
-            flash("Invalid Aadhaar card number. It should be a 12-digit number.")
-            return redirect(url_for('customer_profile', username=username))
+    with Session(engine) as sess:
+        customer = sess.query(Customer_Details).filter_by(Email=username).first()
 
-        with Session(engine) as sess:
-            customer = sess.query(Customer_Details).filter_by(Email=username).first()
-            if customer:
-                customer.name = name
-                customer.phone = phone
-                customer.city = city
-                customer.aadhaar = aadhaar
-                sess.commit()
-                flash("Profile updated successfully.")
-            else:
-                flash("Customer not found.")
-            return redirect(url_for('customer_profile', username=username))
-    
-    return render_template('customer_profile.html')
+        if request.method == 'POST':
+            customer.name = request.form['name']
+            customer.phone = request.form['phone']
+            customer.city = request.form['city']
+            customer.aadhaar = request.form['aadhaar']
+            sess.commit()
+            flash("Profile updated successfully.")
+            return redirect(url_for('customer_portal', username=username))
+
+    return render_template('customer_profile.html', customer=customer)
 
 
 @app.route('/customer/register', methods=['GET', 'POST'])
@@ -114,27 +119,33 @@ def customer_register():
 
 from datetime import datetime, timedelta
 
-@app.route('/customer/portal/<username>', methods=['GET', 'POST'])
+@app.route('/customer_portal/<username>', methods=['GET', 'POST'])
 def customer_portal(username):
-    if not session.get('user_id'):
-        flash("Please log in to access your portal.")
-        return redirect(url_for('customer_login'))
-    
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    city = request.args.get('city', '')
+    profession = request.args.get('profession', '')
+
     with Session(engine) as sess:
-        customer = sess.query(Customer_Details).filter_by(Email=username).first()
-        if not customer:
-            flash("Customer not found.")
-            return redirect(url_for('customer_login'))
+        query = sess.query(Professional_details)
+        if city:
+            query = query.filter_by(city=city)
+        if profession:
+            query = query.filter_by(profession=profession)
+        professionals = query.all()
 
-        # Fetch all available professionals
-        professionals = sess.query(Professional_details).filter_by(availability=True).all()
+        # Calculate average rating for each professional
+        for professional in professionals:
+            reviews = sess.query(JobReview).join(Booking).filter(Booking.professional_email == professional.Email).all()
+            if reviews:
+                professional.average_rating = sum(review.rating for review in reviews) / len(reviews)
+            else:
+                professional.average_rating = 'No reviews yet'
 
-        # Date range for next 3 days
-        today = datetime.now().date()
-        min_date = today
-        max_date = today + timedelta(days=3)
+        professionals = sorted(professionals, key=lambda p: p.average_rating, reverse=True)
 
-    return render_template('customer_portal.html', username=username, professionals=professionals, min_date=min_date, max_date=max_date)
+    return render_template('customer_portal.html', username=username, professionals=professionals, city=city, profession=profession)
 
 
 @app.route('/book_slot', methods=['POST'])
@@ -194,3 +205,41 @@ def make_payment(booking_id):
             flash("Booking not found.")
 
     return redirect(url_for('my_bookings'))
+
+
+@app.route('/customer_profile_view/<username>', methods=['GET'])
+def customer_profile_view(username):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        customer = sess.query(Customer_Details).filter_by(Email=username).first()
+
+    return render_template('customer_profile_view.html', customer=customer)
+
+@app.route('/update_customer_profile/<username>', methods=['POST'])
+def update_customer_profile(username):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        customer = sess.query(Customer_Details).filter_by(Email=username).first()
+        customer.city = request.form['city']
+        sess.commit()
+        flash("City updated successfully.")
+        return redirect(url_for('customer_profile_view', username=username))
+
+@app.route('/reset_customer_password/<username>', methods=['POST'])
+def reset_customer_password(username):
+    if 'user_id' not in session:
+        return redirect(url_for('customer_login'))  # Redirect to login if not logged in
+
+    new_password = request.form['new_password']
+    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+    with Session(engine) as sess:
+        customer = sess.query(Customer_Details).filter_by(Email=username).first()
+        customer.password = hashed_password
+        sess.commit()
+        flash("Password reset successfully.")
+        return redirect(url_for('customer_profile_view', username=username))

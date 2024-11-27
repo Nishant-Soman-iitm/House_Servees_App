@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Professional Profile</h2>
+    <p>View and update your profile details.</p>
+
+    <form method="POST" action="{{ url_for('update_professional_profile', username=session['professional_id']) }}">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ professional.name }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" name="phone" id="phone" class="form-control" value="{{ professional.phone }}" disabled>
+        </div>
+        <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" name="city" id="city" class="form-control" value="{{ professional.city }}" required>
+        </div>
+        <div class="form-group">
+            <label for="aadhaar">Aadhaar Card Number:</label>
+            <input type="text" name="aadhaar" id="aadhaar" class="form-control" value="{{ professional.aadhaar }}" disabled>
+        </div>
+        <button type="submit" class="btn btn-primary">Update City</button>
+    </form>
+
+    <h3 class="mt-4">Reset Password</h3>
+    <form method="POST" action="{{ url_for('reset_professional_password', username=session['professional_id']) }}">
+        <div class="form-group">
+            <label for="new_password">New Password:</label>
+            <input type="password" name="new_password" id="new_password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Reset Password</button>
+    </form>
+</div>
+{% endblock %}

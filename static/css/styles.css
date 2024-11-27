@@ -1,0 +1,144 @@
+:root {
+    --color1: rgb(246, 166, 0);
+    --color2: rgb(50, 33, 61);
+    --color3: rgb(161, 101, 33);
+    --color4: rgb(98, 56, 45);
+    --color5: rgb(210, 140, 20);
+    --color6: rgb(47, 31, 58);
+    --color7: rgb(72, 40, 51);
+    --color8: rgb(231, 156, 12);
+    --color9: rgb(128, 77, 40);
+    --color10: rgb(190, 123, 27);
+}
+
+body {
+    background-color: var(--color2);
+    color: #fff;
+    font-family: monospace;
+}
+
+.navbar {
+    background-color: var(--color6);
+}
+
+.navbar-brand img {
+    height: 150px;
+}
+
+.card-header {
+    background-color: var(--color3);
+    color: #fff;
+    border-bottom: 2px solid var(--color1);
+}
+
+.card-body {
+    background-color: var(--color7);
+    color: #fff;
+    border: 1px solid var(--color3);
+    border-radius: 5px;
+}
+
+.list-group-item {
+    background-color: var(--color4);
+    color: var(--color8);
+    border: 1px solid var(--color8);
+    font-family: monospace;
+}
+
+.btn-primary {
+    background-color: var(--color1);
+    border-color: var(--color1);
+    color: #fff;
+}
+
+.btn-success {
+    background-color: var(--color3);
+    border-color: var(--color3);
+    color: #fff;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--color8);
+    border-color: var(--color8);
+}
+
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+    background-color: var(--color10);
+    border-color: var(--color10);
+}
+
+.footer {
+    background-color: var(--color6);
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+h1.display-4, h2 {
+    color: var(--color1);
+}
+
+h3 {
+    color: var(--color8);
+}
+
+p.lead {
+    color: var(--color8);
+}
+
+
+/* Typewriter effect */
+.typewriter {
+    font-family: monospace;
+    overflow: hidden;
+    border-right: .15em solid var(--color8);
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: .15em;
+    animation: typing 5.0s steps(30, end), blink-caret .75s step-end infinite;
+    color: var(--color8);
+    padding-left: 20px; /* Add padding to ensure proper spacing */
+    max-width: 60%; /* Restrict the width to 25% of the container */
+}
+
+@keyframes typing {
+    0% { width: 0 }
+    50% { width: 100% }
+    100% { width: 0 }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--color9); }
+}
+
+/*#background-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    opacity: 0.5; /* Adjust the opacity as needed
+}
+*/
+
+#One {
+    font-family: monospace;
+    color: var(--color8);
+}
+#Two {
+    font-family: monospace;
+    color: var(--color8);
+}
+
+#Three {
+    font-family: monospace;
+    color: var(--color8);
+}
+
+#headingElectrical, #headingPainting, #headingPlumbing, #headingInterior, #headingCarpentry, #headingCleaning {
+    font-family: monospace;
+    color: var(--color8);
+    background-color: var(--color4)/*rgb(127, 174, 127)*/;
+}

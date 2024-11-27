@@ -51,6 +51,7 @@ def register_professional():
 
     return render_template('professional_register.html', services=services)
 
+
 @app.route('/professional/login', methods=['GET', 'POST'])
 def professional_login():
     if request.method == 'POST':
@@ -62,6 +63,19 @@ def professional_login():
             professional = sess.query(Professional_details).filter_by(Email=username).first()
 
             if professional and bcrypt.checkpw(password.encode('utf-8'), professional.password):  # If user exists and password matches
+                if professional.status == 'Blocked':
+                    flash("Your account is blocked. Please contact support.")
+                    return render_template('professional_login.html')
+                elif professional.status == 'Pending':
+                    flash("Your account is pending approval. Please wait for admin approval.")
+                    return render_template('professional_login.html')
+
+                # Check if the profile is complete
+                if not professional.name or not professional.phone or not professional.city or not professional.aadhaar:
+                    session['professional_id'] = professional.Email
+                    flash("Please complete your profile before accessing the portal.")
+                    return redirect(url_for('professional_profile', username=professional.Email))
+
                 # Set the session for the logged-in professional
                 session['professional_id'] = professional.Email
                 return redirect(url_for('professional_portal', username=professional.Email))  # Redirect to professional portal page
@@ -201,6 +215,20 @@ def professional_profile(username):
             professional.name = request.form['name']
             professional.phone = request.form['phone']
             professional.city = request.form['city']
+            professional.aadhaar = request.form['aadhaar']
+            sess.commit()
+            flash("Profile updated successfully.")
+            return redirect(url_for('professional_portal', username=username))
+
+    return render_template('professional_profile.html', professional=professional)
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+
+        if request.method == 'POST':
+            professional.name = request.form['name']
+            professional.phone = request.form['phone']
+            professional.city = request.form['city']
             professional.profession = request.form['profession']
             professional.availability = 'availability' in request.form
             sess.commit()
@@ -208,6 +236,41 @@ def professional_profile(username):
             return redirect(url_for('professional_portal', username=username))
 
     return render_template('professional_profile.html', professional=professional)
+
+@app.route('/change_service/<username>', methods=['GET', 'POST'])
+def change_service(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+        services = sess.query(service).all()
+
+        if request.method == 'POST':
+            new_service = request.form['new_service']
+            professional.profession = new_service
+            sess.commit()
+            flash("Service changed successfully.")
+            return redirect(url_for('professional_portal', username=username))
+
+    return render_template('change_service.html', professional=professional, services=services)
+
+@app.route('/remove_account/<username>', methods=['POST'])
+def remove_account(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+        if professional:
+            sess.delete(professional)
+            sess.commit()
+            flash("Account removed successfully.")
+            session.pop('professional_id', None)
+            return redirect(url_for('professional_login'))
+        else:
+            flash("Professional not found.")
+            return redirect(url_for('professional_portal', username=username))
 
 @app.route('/update_job_status/<int:job_id>', methods=['POST'])
 def update_job_status(job_id):
@@ -245,3 +308,41 @@ def my_jobs():
         jobs = sess.query(Booking).filter_by(professional_email=session['professional_id']).all()
 
     return render_template('my_jobs.html', jobs=jobs)
+
+
+@app.route('/professional_profile_view/<username>', methods=['GET'])
+def professional_profile_view(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+
+    return render_template('professional_profile_view.html', professional=professional)
+
+@app.route('/update_professional_profile/<username>', methods=['POST'])
+def update_professional_profile(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+        professional.city = request.form['city']
+        sess.commit()
+        flash("City updated successfully.")
+        return redirect(url_for('professional_profile_view', username=username))
+
+@app.route('/reset_professional_password/<username>', methods=['POST'])
+def reset_professional_password(username):
+    if 'professional_id' not in session:
+        return redirect(url_for('professional_login'))  # Redirect to login if not logged in
+
+    new_password = request.form['new_password']
+    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+    with Session(engine) as sess:
+        professional = sess.query(Professional_details).filter_by(Email=username).first()
+        professional.password = hashed_password
+        sess.commit()
+        flash("Password reset successfully.")
+        return redirect(url_for('professional_profile_view', username=username))

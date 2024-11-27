@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Change Service</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="new_service">Select New Service:</label>
+            <select class="form-control" id="new_service" name="new_service" required>
+                {% for service in services %}
+                    <option value="{{ service.name }}">{{ service.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Change Service</button>
+    </form>
+    <form action="{{ url_for('remove_account', username=professional.Email) }}" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-danger mt-3">Remove Account</button>
+    </form>
+</div>
+{% endblock %}

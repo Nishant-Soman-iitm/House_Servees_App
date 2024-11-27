@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Authenticate Users</h2>
+    
+    <h3>Customers</h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Aadhaar</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.Email }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.city }}</td>
+                <td>{{ customer.aadhaar }}</td>
+                <td>{{ customer.status }}</td>
+                <td>
+                    <form action="{{ url_for('update_user_status', user_type='customer', email=customer.Email) }}" method="POST">
+                        <select name="status" class="form-control" onchange="this.form.submit()">
+                            <option value="Pending" {% if customer.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Active" {% if customer.status == 'Active' %}selected{% endif %}>Active</option>
+                            <option value="Blocked" {% if customer.status == 'Blocked' %}selected{% endif %}>Blocked</option>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Professionals</h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Aadhaar</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professional in professionals %}
+            <tr>
+                <td>{{ professional.Email }}</td>
+                <td>{{ professional.name }}</td>
+                <td>{{ professional.phone }}</td>
+                <td>{{ professional.city }}</td>
+                <td>{{ professional.aadhaar }}</td>
+                <td>{{ professional.status }}</td>
+                <td>
+                    <form action="{{ url_for('update_user_status', user_type='professional', email=professional.Email) }}" method="POST">
+                        <select name="status" class="form-control" onchange="this.form.submit()">
+                            <option value="Pending" {% if professional.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Active" {% if professional.status == 'Active' %}selected{% endif %}>Active</option>
+                            <option value="Blocked" {% if professional.status == 'Blocked' %}selected{% endif %}>Blocked</option>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

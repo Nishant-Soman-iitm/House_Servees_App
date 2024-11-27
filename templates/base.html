@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Home Servees{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!--<video autoplay muted loop id="background-video">
+        <source src="{{ url_for('static', filename='videos/background_video.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>-->
+    <nav class="navbar navbar-expand-lg">
         <a class="navbar-brand" href="{{ url_for('home') }}">
-            <img src="{{ url_for('static', filename='images/your-logo.png') }}" alt="House Servees Logo" style="height: 150px;">
+            <img src="{{ url_for('static', filename='images/your-logo.png') }}" alt="House Servees Logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -18,12 +22,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav flex-column ml-0">  <!-- flex-column stacks the items vertically -->
                 <li class="nav-item">
-                    <a class="btn btn-outline-primary" href="{{ url_for('customer_login') }}">Customer Portal</a>
+                    <a id="One" class="btn btn-outline-primary" href="{{ url_for('customer_login') }}">Customer Portal</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-outline-success" href="{{ url_for('professional_login') }}">Service Professional Portal</a>
+                    <a id="Two" class="btn btn-outline-success" href="{{ url_for('professional_login') }}">Professional Portal</a>
                 </li>
             </ul>
+            <span class="navbar-text ml-auto typewriter"><h3>You Request We Serve</h3></span>
         </div>
     </nav>
     
@@ -39,8 +44,28 @@
         {% block content %}{% endblock %}
     </div>
 
+    <footer class="footer">
+        <div class="text-center p-3">
+            © 2024 Home Servees. All rights reserved.
+        </div>
+    </footer>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var headings = document.querySelectorAll('.card-header');
+            headings.forEach(function(heading) {
+                heading.addEventListener('click', function() {
+                    var target = this.getAttribute('data-target');
+                    var collapseElement = document.querySelector(target);
+                    var isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    collapseElement.classList.toggle('show', !isExpanded);
+                    this.setAttribute('aria-expanded', !isExpanded);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
